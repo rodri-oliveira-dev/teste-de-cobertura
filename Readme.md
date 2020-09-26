@@ -1,6 +1,6 @@
 # Cobertura de testes com Coverlet e Report Generator
 
-Este projeto aborda o uso da cobertura de código para Teste de Unidades com [Coverlet](https://github.com/coverlet-coverage/coverlet) e geração de relatórios usando o [ReportGenerator](https://github.com/danielpalme/ReportGenerator). Embora este artigo se concentre em C# e xUnit como a estrutura de teste, o MSTest e o NUnit também funcionariam.  O coverlet é um projeto de software livre no GitHub  que fornece uma estrutura de cobertura de código para C#.  
+Este projeto aborda o uso da cobertura de código para Testes de Unidades com [Coverlet](https://github.com/coverlet-coverage/coverlet) e geração de relatórios usando o [ReportGenerator](https://github.com/danielpalme/ReportGenerator). Embora este artigo se concentre em C# e xUnit como a estrutura de teste, o MSTest e o NUnit também funcionariam.  O coverlet é um projeto de software livre no GitHub  que fornece uma estrutura de cobertura de código para C#.  
 
 Além disso, este projeto fornece detalhes sobre como usar as informações de cobertura de código coletadas de uma execução de teste do coverlet para gerar um relatório.  A geração de relatórios é possível usando o ReportGenerator.  O ReportGenerator converte relatórios de cobertura gerados por testes em relatórios legíveis por humanos.
 
