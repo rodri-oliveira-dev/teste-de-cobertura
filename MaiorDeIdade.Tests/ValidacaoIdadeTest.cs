@@ -1,3 +1,4 @@
+using MaiorDeIdade;
 using Xunit;
 
 namespace MaiorDeIdade.Tests;
