@@ -75,7 +75,9 @@ jobs:
 
       - name: Publish coverage summary
         shell: bash
-        run: cat artifacts/coverage-report/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          cat artifacts/coverage-report/Summary.txt
+          cat artifacts/coverage-report/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Enforce coverage quality gate
         run: >-
@@ -83,8 +85,8 @@ jobs:
           -reports:"${{ steps.coverage.outputs.file }}"
           -targetdir:"artifacts/coverage-gate"
           -reporttypes:"TextSummary"
-          -minimumCoverageThresholds:lineCoverage=90
-          -minimumCoverageThresholds:branchCoverage=90
+          --minimumCoverageThresholds:lineCoverage=90
+          --minimumCoverageThresholds:branchCoverage=90
 
       - name: Upload coverage report
         if: ${{ always() && steps.coverage.outputs.file != '' }}
