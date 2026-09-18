@@ -96,6 +96,55 @@ jobs:
           --minimumCoverageThresholds:lineCoverage=90
           --minimumCoverageThresholds:branchCoverage=90
 
+      - name: Test E2E against real Kestrel process
+        shell: bash
+        env:
+          E2E_BASE_URL: http://127.0.0.1:5055
+        run: |
+          mkdir -p artifacts/e2e
+
+          dotnet MaiorDeIdade.Api/bin/Release/net10.0/MaiorDeIdade.Api.dll             --urls "$E2E_BASE_URL"             > artifacts/e2e/api.log 2>&1 &
+          api_pid=$!
+
+          cleanup() {
+            kill "$api_pid" 2>/dev/null || true
+            wait "$api_pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+
+          ready=false
+          for attempt in {1..30}; do
+            if curl --fail --silent "$E2E_BASE_URL/health" > /dev/null; then
+              ready=true
+              break
+            fi
+
+            if ! kill -0 "$api_pid" 2>/dev/null; then
+              echo "A API encerrou antes de ficar pronta."
+              cat artifacts/e2e/api.log
+              exit 1
+            fi
+
+            sleep 1
+          done
+
+          if [ "$ready" != "true" ]; then
+            echo "A API não ficou pronta dentro do tempo esperado."
+            cat artifacts/e2e/api.log
+            exit 1
+          fi
+
+          dotnet test MaiorDeIdade.E2ETests/MaiorDeIdade.E2ETests.csproj             --configuration Release             --no-build             --results-directory artifacts/test-results/e2e
+
+      - name: Upload E2E diagnostics on failure
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: e2e-diagnostics
+          path: artifacts/e2e/
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Upload coverage report
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7

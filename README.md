@@ -13,21 +13,20 @@ Projeto didático para demonstrar **testes automatizados, cobertura de código, 
 
 Este repositório nasceu como um exemplo simples usado em uma apresentação sobre a **pirâmide de testes**. O domínio foi mantido propositalmente pequeno: uma regra que verifica se uma pessoa atingiu a maioridade.
 
-A versão atual moderniza aquele exemplo em duas camadas: uma base maior de **testes unitários rápidos e determinísticos** e uma camada menor de **testes de integração HTTP** que valida a composição real da aplicação.
+A versão atual moderniza aquele exemplo em três camadas: uma base maior de **testes unitários rápidos e determinísticos**, uma camada menor de **testes de integração HTTP** e poucos **testes E2E black-box** contra o processo real da API.
 
 ```text
-              E2E
-             /   \
+              E2E             ← 3 cenários black-box
+             /---\
             /     \
-           /       \
-          / Integração\      ← poucos cenários HTTP
-         /-----------\
-        /             \
-       /   Unitários   \     ← maior parte da suíte
-      /_________________\
+           /Integração\       ← poucos cenários in-memory
+          /---------\
+         /           \
+        /  Unitários  \       ← maior parte da suíte
+       /_______________\
 ```
 
-A Minimal API adicionada ao exemplo cria uma fronteira HTTP real para demonstrar integração entre serialização JSON, model binding, DI, `TimeProvider` e a regra de negócio. Ainda não há testes E2E, porque não existe interface externa ou fluxo distribuído que justifique essa camada.
+A Minimal API cria uma fronteira HTTP real para demonstrar integração entre serialização JSON, model binding, DI, `TimeProvider` e a regra de negócio. A camada E2E executa o DLL compilado em um processo Kestrel real e acessa a aplicação exclusivamente por HTTP, sem referência aos projetos internos.
 
 ## Objetivo
 
@@ -38,6 +37,8 @@ Este projeto mostra, de forma reproduzível, como:
 - testar cenários de fronteira, incluindo exatamente 18 anos e anos bissextos;
 - testar a integração HTTP da Minimal API com `WebApplicationFactory`;
 - substituir dependências de infraestrutura, como `TimeProvider`, durante testes de integração;
+- testar o artefato compilado de ponta a ponta em Kestrel real;
+- manter testes E2E desacoplados dos assemblies internos;
 - coletar line e branch coverage;
 - gerar relatórios de cobertura em HTML;
 - aplicar um quality gate de cobertura no CI;
@@ -89,6 +90,9 @@ Este projeto mostra, de forma reproduzível, como:
 ├── MaiorDeIdade.IntegrationTests/
 │   ├── MaiorDeIdade.IntegrationTests.csproj
 │   └── MaioridadeEndpointTests.cs
+├── MaiorDeIdade.E2ETests/
+│   ├── MaiorDeIdade.E2ETests.csproj
+│   └── MaioridadeApiE2ETests.cs
 ├── .editorconfig
 ├── .gitattributes
 ├── Directory.Build.props
@@ -102,7 +106,7 @@ Este projeto mostra, de forma reproduzível, como:
 
 O repositório fixa o SDK em `10.0.400` via `global.json`, com `rollForward: latestFeature`. As convenções compartilhadas ficam em `.editorconfig` e `.gitattributes`, enquanto `Directory.Build.props` centraliza warnings como errors, analyzers do .NET 10, NuGet audit e build determinístico.
 
-Para VS Code, abra `dotnet-code-coverage.code-workspace`. O workspace versionado oferece tasks para restore, build, testes unitários, testes de integração e cobertura, além de uma configuração de debug para `MaiorDeIdade.Api`.
+Para VS Code, abra `dotnet-code-coverage.code-workspace`. O workspace versionado oferece tasks para restore, build, testes unitários, testes de integração, E2E e cobertura, além de uma configuração de debug para `MaiorDeIdade.Api`. Para o task E2E, inicie antes a API pela configuração de debug.
 
 A solution usa o formato `.slnx`, padrão para novas solutions no .NET 10.
 
@@ -110,12 +114,16 @@ A solution usa o formato `.slnx`, padrão para novas solutions no .NET 10.
 
 Pré-requisito: SDK do .NET 10 instalado.
 
-Restaure as dependências e execute os testes:
+Restaure as dependências, compile a solution e execute as camadas rápidas:
 
 ```bash
 dotnet restore DotNet.CodeCoverage.slnx
-dotnet test DotNet.CodeCoverage.slnx
+dotnet build DotNet.CodeCoverage.slnx
+dotnet test MaiorDeIdade.Tests/MaiorDeIdade.Tests.csproj
+dotnet test MaiorDeIdade.IntegrationTests/MaiorDeIdade.IntegrationTests.csproj
 ```
+
+Os E2E são executados separadamente porque dependem de uma instância real da API em execução.
 
 Os testes unitários usam um `TimeProvider` controlado. Dessa forma, cenários como exatamente 18 anos, aniversário amanhã, virada de mês, virada de ano, data futura e nascimento em 29 de fevereiro não dependem da data real da máquina.
 
@@ -129,13 +137,54 @@ Os testes de integração sobem a aplicação em memória com `WebApplicationFac
 HTTP → JSON/model binding → DI → TimeProvider → regra de negócio → resposta HTTP
 ```
 
-A suíte cobre três cenários representativos:
+A suíte cobre quatro cenários representativos:
 
+- health check → `200 OK`;
 - exatamente 18 anos → `200 OK` e `maiorDeIdade: true`;
 - ainda menor de idade → `200 OK` e `maiorDeIdade: false`;
 - data inválida no JSON → `400 Bad Request`.
 
 O `TimeProvider.System` registrado pela aplicação é substituído por um relógio fixo durante os testes, mantendo a integração determinística sem mockar o endpoint ou a regra de negócio.
+
+## Testes E2E
+
+O projeto `MaiorDeIdade.E2ETests` não possui `ProjectReference` para a API ou para a regra de negócio. Ele atua como um consumidor externo e conhece apenas `E2E_BASE_URL`.
+
+O CI executa o fluxo real:
+
+```text
+DLL compilado → processo Kestrel → porta HTTP → JSON → DI → regra → resposta HTTP
+```
+
+Os três cenários E2E são propositalmente amplos:
+
+- adulto inequívoco (`1900-01-01`) → `200 OK` e `true`;
+- data futura (`2999-01-01`) → `200 OK` e `false`;
+- payload inválido → `400 Bad Request`.
+
+Para executar localmente, inicie a API em um terminal:
+
+```bash
+dotnet run --project MaiorDeIdade.Api/MaiorDeIdade.Api.csproj \
+  --configuration Release \
+  --urls http://127.0.0.1:5055
+```
+
+Em outro terminal, no Bash:
+
+```bash
+E2E_BASE_URL=http://127.0.0.1:5055 \
+  dotnet test MaiorDeIdade.E2ETests/MaiorDeIdade.E2ETests.csproj --configuration Release
+```
+
+No PowerShell:
+
+```powershell
+$env:E2E_BASE_URL = "http://127.0.0.1:5055"
+dotnet test MaiorDeIdade.E2ETests/MaiorDeIdade.E2ETests.csproj --configuration Release
+```
+
+Os E2E ficam **fora da métrica de code coverage**. Essa camada valida comportamento observável do sistema em execução, enquanto line/branch coverage continuam medindo os testes unitários e de integração.
 
 ## Gerar cobertura localmente
 
@@ -145,12 +194,18 @@ Restaure primeiro as ferramentas locais versionadas no repositório:
 dotnet tool restore
 ```
 
-Execute os testes coletando cobertura no formato Cobertura:
+Execute unitários e integração em diretórios separados:
 
 ```bash
-dotnet test DotNet.CodeCoverage.slnx \
+dotnet test MaiorDeIdade.Tests/MaiorDeIdade.Tests.csproj \
   --configuration Release \
-  --results-directory artifacts/test-results \
+  --results-directory artifacts/test-results/unit \
+  --coverlet \
+  --coverlet-output-format cobertura
+
+dotnet test MaiorDeIdade.IntegrationTests/MaiorDeIdade.IntegrationTests.csproj \
+  --configuration Release \
+  --results-directory artifacts/test-results/integration \
   --coverlet \
   --coverlet-output-format cobertura
 ```
@@ -235,7 +290,10 @@ O workflow `.github/workflows/ci.yml` executa em pull requests e pushes para `ma
 7. combinação dos relatórios com ReportGenerator;
 8. publicação do resumo no GitHub Actions;
 9. validação do quality gate;
-10. upload do artifact `coverage-report`.
+10. inicialização do DLL real da API em Kestrel;
+11. espera ativa pelo endpoint `/health`;
+12. execução dos testes E2E black-box;
+13. upload do artifact `coverage-report` e, em falhas E2E, dos logs de diagnóstico.
 
 Além do CI principal:
 

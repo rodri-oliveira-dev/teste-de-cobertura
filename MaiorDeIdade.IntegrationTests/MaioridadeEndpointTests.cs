@@ -15,6 +15,18 @@ public class MaioridadeEndpointTests
     private static readonly DateTimeOffset DataReferencia =
         new(2026, 9, 18, 12, 0, 0, TimeSpan.Zero);
 
+    [Fact(DisplayName = "GET /health retorna 200 OK")]
+    public async Task GetHealthDeveRetornarOk()
+    {
+        using var factory = new MaiorDeIdadeApiFactory(DataReferencia);
+        using var client = factory.CreateClient();
+        var cancellationToken = TestContext.Current.CancellationToken;
+
+        using var response = await client.GetAsync("/health", cancellationToken);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
     [Fact(DisplayName = "POST /maioridade retorna true para exatamente 18 anos")]
     public async Task PostMaioridadeExatamenteDezoitoAnosDeveRetornarTrue()
     {
