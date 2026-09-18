@@ -84,16 +84,13 @@
       },
       {
         "label": ".NET: Test",
-        "type": "process",
-        "command": "dotnet",
-        "args": [
-          "test",
-          "DotNet.CodeCoverage.slnx",
-          "--configuration",
-          "Release"
-        ],
         "group": "test",
-        "problemMatcher": []
+        "problemMatcher": [],
+        "dependsOn": [
+          ".NET: Test Unit",
+          ".NET: Test Integration"
+        ],
+        "dependsOrder": "sequence"
       },
       {
         "label": ".NET: Test Unit",
@@ -118,6 +115,24 @@
           "--configuration",
           "Release"
         ],
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": ".NET: Test E2E",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+          "test",
+          "MaiorDeIdade.E2ETests/MaiorDeIdade.E2ETests.csproj",
+          "--configuration",
+          "Release"
+        ],
+        "options": {
+          "env": {
+            "E2E_BASE_URL": "http://127.0.0.1:5055"
+          }
+        },
         "group": "test",
         "problemMatcher": []
       },

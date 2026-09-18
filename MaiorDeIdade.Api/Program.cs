@@ -7,6 +7,8 @@ builder.Services.AddSingleton(TimeProvider.System);
 
 var app = builder.Build();
 
+app.MapGet("/health", static () => Results.Ok());
+
 app.MapPost("/maioridade", (VerificarMaioridadeRequest request, TimeProvider timeProvider) =>
 {
     var dataNascimento = request.DataNascimento.ToDateTime(TimeOnly.MinValue);
