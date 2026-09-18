@@ -15,7 +15,7 @@ public class ValidacaoIdadeTest
     [InlineData(2008, 9, 1, 2026, 8, 31, false)]
     [InlineData(2007, 12, 31, 2026, 1, 1, true)]
     [InlineData(2008, 1, 2, 2026, 1, 1, false)]
-    public void VerificaMaiorDeIdade_DeveRetornarResultadoEsperado(
+    public void VerificaMaiorDeIdadeDeveRetornarResultadoEsperado(
         int nascimentoAno,
         int nascimentoMes,
         int nascimentoDia,
@@ -36,7 +36,7 @@ public class ValidacaoIdadeTest
     }
 
     [Fact(DisplayName = "Data de nascimento futura não é maior de idade")]
-    public void VerificaMaiorDeIdade_DataNascimentoFutura_DeveRetornarFalso()
+    public void VerificaMaiorDeIdadeDataNascimentoFuturaDeveRetornarFalso()
     {
         // Arrange
         var dataNascimento = new DateTime(2027, 1, 1);
@@ -50,7 +50,7 @@ public class ValidacaoIdadeTest
     }
 
     [Fact(DisplayName = "TimeProvider nulo lança ArgumentNullException")]
-    public void VerificaMaiorDeIdade_TimeProviderNulo_DeveLancarArgumentNullException()
+    public void VerificaMaiorDeIdadeTimeProviderNuloDeveLancarArgumentNullException()
     {
         // Arrange
         var dataNascimento = new DateTime(2000, 1, 1);
@@ -67,7 +67,7 @@ public class ValidacaoIdadeTest
     [InlineData(2026, 2, 27, false)]
     [InlineData(2026, 2, 28, true)]
     [InlineData(2026, 3, 1, true)]
-    public void VerificaMaiorDeIdade_NascimentoEm29DeFevereiro_DeveTratarAnoNaoBissexto(
+    public void VerificaMaiorDeIdadeNascimentoEm29DeFevereiroDeveTratarAnoNaoBissexto(
         int referenciaAno,
         int referenciaMes,
         int referenciaDia,
@@ -84,7 +84,7 @@ public class ValidacaoIdadeTest
         Assert.Equal(esperado, resultado);
     }
 
-    private static TimeProvider CriarTimeProvider(int ano, int mes, int dia)
+    private static FixedTimeProvider CriarTimeProvider(int ano, int mes, int dia)
     {
         var dataReferencia = new DateTimeOffset(ano, mes, dia, 12, 0, 0, TimeSpan.Zero);
 
