@@ -6,7 +6,7 @@ namespace MaiorDeIdade.Tests;
 public class ValidacaoIdadeTest
 {
     [Theory(DisplayName = "Valida maioridade em cenários de fronteira")]
-    [InlineData(2007, 9, 18, 2026, 9, 18, true)]
+    [InlineData(2008, 9, 18, 2026, 9, 18, true)]
     [InlineData(2008, 9, 19, 2026, 9, 18, false)]
     [InlineData(2008, 9, 17, 2026, 9, 18, true)]
     [InlineData(2006, 9, 18, 2026, 9, 18, true)]
