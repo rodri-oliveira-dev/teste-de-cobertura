@@ -1,0 +1,46 @@
+name: Sugerir melhoria
+description: Proponha uma melhoria para o exemplo, testes, cobertura ou automação do projeto.
+title: "[Melhoria]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema ou oportunidade
+      description: Descreva qual problema, limitação ou oportunidade de aprendizado a proposta aborda.
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solução desejada
+      description: Descreva a mudança ou comportamento que você gostaria de ver.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Descreva outras abordagens ou soluções consideradas.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área principal
+      options:
+        - Regra de negócio
+        - Testes
+        - Cobertura de código
+        - Mutation testing
+        - GitHub Actions / CI
+        - Documentação
+        - Outro
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Contexto adicional
+      description: Adicione exemplos, links ou outras informações úteis para avaliar a proposta.

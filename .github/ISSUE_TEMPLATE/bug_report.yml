@@ -1,0 +1,68 @@
+name: Relatar bug
+description: Relate um problema reproduzível no projeto.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por relatar o problema. Forneça o menor exemplo reproduzível possível.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema
+      description: Descreva o problema e por que ele importa.
+      placeholder: O que está acontecendo?
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Comportamento esperado
+      description: Descreva o que deveria acontecer.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Comportamento observado
+      description: Descreva o que aconteceu.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reprodução mínima
+      description: Informe os menores passos ou trecho de código necessários para reproduzir.
+      placeholder: |
+        1. Configure...
+        2. Execute...
+        3. Observe...
+    validations:
+      required: true
+
+  - type: input
+    id: dotnet
+    attributes:
+      label: Versão do .NET SDK
+      description: Saída de `dotnet --version`.
+      placeholder: "10.0.x"
+    validations:
+      required: true
+
+  - type: input
+    id: operating-system
+    attributes:
+      label: Sistema operacional
+      description: Sistema operacional e versão, quando relevante.
+      placeholder: "Ubuntu 24.04, Windows 11, macOS"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs ou detalhes da exceção
+      description: Remova segredos, tokens, credenciais, dados pessoais e outras informações sensíveis antes de enviar.
+      render: shell
