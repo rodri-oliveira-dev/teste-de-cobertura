@@ -36,14 +36,14 @@ jobs:
         run: dotnet tool restore
 
       - name: Restore dependencies
-        run: dotnet restore XUnit.Coverage.sln
+        run: dotnet restore DotNet.CodeCoverage.sln
 
       - name: Build
-        run: dotnet build XUnit.Coverage.sln --configuration Release --no-restore
+        run: dotnet build DotNet.CodeCoverage.sln --configuration Release --no-restore
 
       - name: Test and collect coverage
         run: >-
-          dotnet test XUnit.Coverage.sln
+          dotnet test DotNet.CodeCoverage.sln
           --configuration Release
           --no-build
           --results-directory artifacts/test-results

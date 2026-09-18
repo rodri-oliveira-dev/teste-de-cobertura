@@ -1,6 +1,6 @@
 {
   "stryker-config": {
-    "solution": "../XUnit.Coverage.sln",
+    "solution": "../DotNet.CodeCoverage.sln",
     "project": "MaiorDeIdade.csproj",
     "configuration": "Release",
     "test-runner": "mtp",
