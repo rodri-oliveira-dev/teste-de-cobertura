@@ -20,14 +20,17 @@ public class MaioridadeEndpointTests
     {
         using var factory = new MaiorDeIdadeApiFactory(DataReferencia);
         using var client = factory.CreateClient();
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         var response = await client.PostAsJsonAsync(
             "/maioridade",
-            new VerificarMaioridadeRequest(new DateOnly(2008, 9, 18)));
+            new VerificarMaioridadeRequest(new DateOnly(2008, 9, 18)),
+            cancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var body = await response.Content.ReadFromJsonAsync<VerificarMaioridadeResponse>();
+        var body = await response.Content.ReadFromJsonAsync<VerificarMaioridadeResponse>(
+            cancellationToken);
 
         Assert.NotNull(body);
         Assert.True(body!.MaiorDeIdade);
@@ -38,14 +41,17 @@ public class MaioridadeEndpointTests
     {
         using var factory = new MaiorDeIdadeApiFactory(DataReferencia);
         using var client = factory.CreateClient();
+        var cancellationToken = TestContext.Current.CancellationToken;
 
         var response = await client.PostAsJsonAsync(
             "/maioridade",
-            new VerificarMaioridadeRequest(new DateOnly(2008, 9, 19)));
+            new VerificarMaioridadeRequest(new DateOnly(2008, 9, 19)),
+            cancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-        var body = await response.Content.ReadFromJsonAsync<VerificarMaioridadeResponse>();
+        var body = await response.Content.ReadFromJsonAsync<VerificarMaioridadeResponse>(
+            cancellationToken);
 
         Assert.NotNull(body);
         Assert.False(body!.MaiorDeIdade);
@@ -60,8 +66,9 @@ public class MaioridadeEndpointTests
             """{"dataNascimento":"data-invalida"}""",
             Encoding.UTF8,
             "application/json");
+        var cancellationToken = TestContext.Current.CancellationToken;
 
-        var response = await client.PostAsync("/maioridade", content);
+        var response = await client.PostAsync("/maioridade", content, cancellationToken);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
