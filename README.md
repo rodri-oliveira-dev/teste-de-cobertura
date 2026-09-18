@@ -13,21 +13,21 @@ Projeto didático para demonstrar **testes automatizados, cobertura de código, 
 
 Este repositório nasceu como um exemplo simples usado em uma apresentação sobre a **pirâmide de testes**. O domínio foi mantido propositalmente pequeno: uma regra que verifica se uma pessoa atingiu a maioridade.
 
-A versão atual moderniza aquele exemplo e aprofunda principalmente a base da pirâmide: **testes unitários rápidos, determinísticos e capazes de detectar regressões relevantes**.
+A versão atual moderniza aquele exemplo em duas camadas: uma base maior de **testes unitários rápidos e determinísticos** e uma camada menor de **testes de integração HTTP** que valida a composição real da aplicação.
 
 ```text
               E2E
              /   \
             /     \
            /       \
-          / Integração\
-         /           \
+          / Integração\      ← poucos cenários HTTP
+         /-----------\
         /             \
-       /   Unitários   \  ← foco deste repositório
+       /   Unitários   \     ← maior parte da suíte
       /_________________\
 ```
 
-O objetivo não é adicionar testes de integração ou E2E artificiais apenas para preencher todas as camadas da pirâmide. Neste exemplo, a regra de negócio não depende de banco de dados, HTTP, mensageria ou outra infraestrutura externa que justifique essas categorias.
+A Minimal API adicionada ao exemplo cria uma fronteira HTTP real para demonstrar integração entre serialização JSON, model binding, DI, `TimeProvider` e a regra de negócio. Ainda não há testes E2E, porque não existe interface externa ou fluxo distribuído que justifique essa camada.
 
 ## Objetivo
 
@@ -36,6 +36,8 @@ Este projeto mostra, de forma reproduzível, como:
 - escrever testes unitários determinísticos para regras dependentes de data;
 - controlar o relógio da aplicação com `TimeProvider`;
 - testar cenários de fronteira, incluindo exatamente 18 anos e anos bissextos;
+- testar a integração HTTP da Minimal API com `WebApplicationFactory`;
+- substituir dependências de infraestrutura, como `TimeProvider`, durante testes de integração;
 - coletar line e branch coverage;
 - gerar relatórios de cobertura em HTML;
 - aplicar um quality gate de cobertura no CI;
@@ -52,6 +54,8 @@ Este projeto mostra, de forma reproduzível, como:
 - Coverlet MTP
 - ReportGenerator
 - Stryker.NET 5
+- ASP.NET Core Minimal API
+- Microsoft.AspNetCore.Mvc.Testing
 - GitHub Actions
 - CodeQL
 - Dependency Review
@@ -74,10 +78,17 @@ Este projeto mostra, de forma reproduzível, como:
 ├── MaiorDeIdade/
 │   ├── MaiorDeIdade.csproj
 │   └── ValidacaoIdade.cs
+├── MaiorDeIdade.Api/
+│   ├── MaiorDeIdade.Api.csproj
+│   ├── Contracts.cs
+│   └── Program.cs
 ├── MaiorDeIdade.Tests/
 │   ├── MaiorDeIdade.Tests.csproj
 │   ├── stryker-config.json
 │   └── ValidacaoIdadeTest.cs
+├── MaiorDeIdade.IntegrationTests/
+│   ├── MaiorDeIdade.IntegrationTests.csproj
+│   └── MaioridadeEndpointTests.cs
 ├── DotNet.CodeCoverage.sln
 ├── global.json
 └── LICENSE
@@ -94,7 +105,25 @@ dotnet restore DotNet.CodeCoverage.sln
 dotnet test DotNet.CodeCoverage.sln
 ```
 
-A suíte usa um `TimeProvider` controlado pelos testes. Dessa forma, cenários como exatamente 18 anos, aniversário amanhã, virada de mês, virada de ano, data futura e nascimento em 29 de fevereiro não dependem da data real da máquina.
+Os testes unitários usam um `TimeProvider` controlado. Dessa forma, cenários como exatamente 18 anos, aniversário amanhã, virada de mês, virada de ano, data futura e nascimento em 29 de fevereiro não dependem da data real da máquina.
+
+## Testes de integração
+
+A Minimal API expõe `POST /maioridade` e usa a mesma regra de negócio do projeto `MaiorDeIdade`.
+
+Os testes de integração sobem a aplicação em memória com `WebApplicationFactory<Program>` e exercitam o fluxo completo:
+
+```text
+HTTP → JSON/model binding → DI → TimeProvider → regra de negócio → resposta HTTP
+```
+
+A suíte cobre três cenários representativos:
+
+- exatamente 18 anos → `200 OK` e `maiorDeIdade: true`;
+- ainda menor de idade → `200 OK` e `maiorDeIdade: false`;
+- data inválida no JSON → `400 Bad Request`.
+
+O `TimeProvider.System` registrado pela aplicação é substituído por um relógio fixo durante os testes, mantendo a integração determinística sem mockar o endpoint ou a regra de negócio.
 
 ## Gerar cobertura localmente
 
@@ -134,7 +163,7 @@ O CI exige no mínimo:
 | Line coverage | 90% |
 | Branch coverage | 90% |
 
-O ReportGenerator valida esses thresholds durante o workflow. Se uma das métricas ficar abaixo do mínimo, o job falha.
+O ReportGenerator combina os relatórios dos testes unitários e de integração antes de validar esses thresholds. Se uma das métricas ficar abaixo do mínimo, o job falha.
 
 ## Mutation testing
 
@@ -188,9 +217,9 @@ O workflow `.github/workflows/ci.yml` executa em pull requests e pushes para `ma
 1. restore das ferramentas locais;
 2. restore das dependências;
 3. build em Release;
-4. execução dos testes;
-5. coleta de cobertura com Coverlet MTP;
-6. geração dos relatórios com ReportGenerator;
+4. execução dos testes unitários e de integração;
+5. coleta de cobertura de ambos os projetos com Coverlet MTP;
+6. combinação dos relatórios com ReportGenerator;
 7. publicação do resumo no GitHub Actions;
 8. validação do quality gate;
 9. upload do artifact `coverage-report`.
