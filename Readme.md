@@ -39,9 +39,9 @@ Depois de executar esse comando, um arquivo HTML que representa o relatório ger
 
 Tela de resumo do projeto:
 
-![](https://github.com/RodrigoDotNet/teste-de-cobertura/blob/master/images/cobertura.PNG)
+![](images/cobertura.PNG)
 
 Tela detalhada da classe e funções:
 
-![](https://github.com/RodrigoDotNet/teste-de-cobertura/blob/master/images/cobertura2.PNG)
+![](images/cobertura2.PNG)
 

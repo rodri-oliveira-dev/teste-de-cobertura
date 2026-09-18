@@ -1,100 +1,98 @@
 using MaiorDeIdade;
-using System;
 using Xunit;
 
-namespace XUnit.Coverlet.Collector
+namespace MaiorDeIdade.Tests;
+
+public class ValidacaoIdadeTest
 {
-    public class ValidacaoIdadeTest
+    [Fact(DisplayName = "Valida nascimento maior de idade")]
+    public void VerificarMaiorDeIdadeSucesso()
     {
-        [Fact(DisplayName = "Valida nascimento maior de idade")]
-        public void VerificarMaiorDeIdadeSucesso()
-        {
-            // Arrange
-            var dataNascimento = DateTime.Now.AddYears(-19).Date;
+        // Arrange
+        var dataNascimento = DateTime.Now.AddYears(-19).Date;
 
-            // Act
-            var resultado = dataNascimento.VerificaMaiorDeIdade();
+        // Act
+        var resultado = dataNascimento.VerificaMaiorDeIdade();
 
-            // Assert
-            Assert.True(resultado);
-        }
+        // Assert
+        Assert.True(resultado);
+    }
 
-        [Fact(DisplayName = "Valida nascimento futuro")]
-        public void VerificarDataFuturaFalha()
-        {
-            // Arrange
-            var dataNascimento = DateTime.Now.AddYears(1).Date;
+    [Fact(DisplayName = "Valida nascimento futuro")]
+    public void VerificarDataFuturaFalha()
+    {
+        // Arrange
+        var dataNascimento = DateTime.Now.AddYears(1).Date;
 
-            // Act
-            var resultado = dataNascimento.VerificaMaiorDeIdade();
+        // Act
+        var resultado = dataNascimento.VerificaMaiorDeIdade();
 
-            // Assert
-            Assert.False(resultado);
-        }
+        // Assert
+        Assert.False(resultado);
+    }
 
-        [Fact(DisplayName = "Valida anivers·rio de maioridade ontem")]
-        public void VerificarMaioridadeOntemPassa()
-        {
-            // Arrange
-            var dataNascimento = DateTime.Now.AddYears(-18).AddDays(-1).Date;
+    [Fact(DisplayName = "Valida anivers√°rio de maioridade ontem")]
+    public void VerificarMaioridadeOntemPassa()
+    {
+        // Arrange
+        var dataNascimento = DateTime.Now.AddYears(-18).AddDays(-1).Date;
 
-            // Act
-            var resultado = dataNascimento.VerificaMaiorDeIdade();
+        // Act
+        var resultado = dataNascimento.VerificaMaiorDeIdade();
 
-            // Assert
-            Assert.True(resultado);
-        }
+        // Assert
+        Assert.True(resultado);
+    }
 
-        [Fact(DisplayName = "Valida anivers·rio mÍs passado")]
-        public void VerificarMaioridadeMesPassado()
-        {
-            // Arrange
-            var dataNascimento = DateTime.Now.AddYears(-18).AddMonths(-1).Date;
+    [Fact(DisplayName = "Valida anivers√°rio m√™s passado")]
+    public void VerificarMaioridadeMesPassado()
+    {
+        // Arrange
+        var dataNascimento = DateTime.Now.AddYears(-18).AddMonths(-1).Date;
 
-            // Act
-            var resultado = dataNascimento.VerificaMaiorDeIdade();
+        // Act
+        var resultado = dataNascimento.VerificaMaiorDeIdade();
 
-            // Assert
-            Assert.True(resultado);
-        }
+        // Assert
+        Assert.True(resultado);
+    }
 
-        [Fact(DisplayName = "Valida anivers·rio de hoje")]
-        public void VerificarMaioridadeHojePassa()
-        {
-            // Arrange
-            var dataNascimento = DateTime.Now.AddYears(-18).Date;
+    [Fact(DisplayName = "Valida anivers√°rio de hoje")]
+    public void VerificarMaioridadeHojePassa()
+    {
+        // Arrange
+        var dataNascimento = DateTime.Now.AddYears(-18).Date;
 
-            // Act
-            var resultado = dataNascimento.VerificaMaiorDeIdade();
+        // Act
+        var resultado = dataNascimento.VerificaMaiorDeIdade();
 
-            // Assert
-            Assert.True(resultado);
-        }
+        // Assert
+        Assert.True(resultado);
+    }
 
-        [Fact(DisplayName = "Valida anivers·rio de maioridade amanh„")]
-        public void VerificarMaioridadeAmanhaFalha()
-        {
-            // Arrange
-            var dataNascimento = DateTime.Now.AddYears(-18).AddDays(1).Date;
+    [Fact(DisplayName = "Valida anivers√°rio de maioridade amanh√£")]
+    public void VerificarMaioridadeAmanhaFalha()
+    {
+        // Arrange
+        var dataNascimento = DateTime.Now.AddYears(-18).AddDays(1).Date;
 
-            // Act
-            var resultado = dataNascimento.VerificaMaiorDeIdade();
+        // Act
+        var resultado = dataNascimento.VerificaMaiorDeIdade();
 
-            // Assert
-            Assert.False(resultado);
-        }
+        // Assert
+        Assert.False(resultado);
+    }
 
-        [Fact(DisplayName = "Valida nascimento menor de idade")]
-        public void VerificarMenorDeIdadeFalha()
-        {
-            // Arrange
-            var dataNascimento = DateTime.Now.AddYears(-17).Date;
+    [Fact(DisplayName = "Valida nascimento menor de idade")]
+    public void VerificarMenorDeIdadeFalha()
+    {
+        // Arrange
+        var dataNascimento = DateTime.Now.AddYears(-17).Date;
 
-            // Act
-            var resultado = dataNascimento.VerificaMaiorDeIdade();
+        // Act
+        var resultado = dataNascimento.VerificaMaiorDeIdade();
 
-            // Assert
-            Assert.False(resultado);
-        }
+        // Assert
+        Assert.False(resultado);
     }
 }
