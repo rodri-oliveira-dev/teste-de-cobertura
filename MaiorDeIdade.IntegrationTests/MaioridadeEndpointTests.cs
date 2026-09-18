@@ -16,7 +16,7 @@ public class MaioridadeEndpointTests
         new(2026, 9, 18, 12, 0, 0, TimeSpan.Zero);
 
     [Fact(DisplayName = "POST /maioridade retorna true para exatamente 18 anos")]
-    public async Task PostMaioridade_ExatamenteDezoitoAnos_DeveRetornarTrue()
+    public async Task PostMaioridadeExatamenteDezoitoAnosDeveRetornarTrue()
     {
         using var factory = new MaiorDeIdadeApiFactory(DataReferencia);
         using var client = factory.CreateClient();
@@ -37,7 +37,7 @@ public class MaioridadeEndpointTests
     }
 
     [Fact(DisplayName = "POST /maioridade retorna false antes dos 18 anos")]
-    public async Task PostMaioridade_AntesDosDezoitoAnos_DeveRetornarFalse()
+    public async Task PostMaioridadeAntesDosDezoitoAnosDeveRetornarFalse()
     {
         using var factory = new MaiorDeIdadeApiFactory(DataReferencia);
         using var client = factory.CreateClient();
@@ -58,7 +58,7 @@ public class MaioridadeEndpointTests
     }
 
     [Fact(DisplayName = "POST /maioridade rejeita data inválida")]
-    public async Task PostMaioridade_DataInvalida_DeveRetornarBadRequest()
+    public async Task PostMaioridadeDataInvalidaDeveRetornarBadRequest()
     {
         using var factory = new MaiorDeIdadeApiFactory(DataReferencia);
         using var client = factory.CreateClient();
