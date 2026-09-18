@@ -1,0 +1,124 @@
+{
+  "folders": [
+    {
+      "name": "dotnet-code-coverage",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/bin": true,
+      "**/obj": true,
+      "**/artifacts": true
+    },
+    "[csharp]": {
+      "editor.formatOnSave": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "ms-dotnettools.csdevkit",
+      "redhat.vscode-yaml"
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": ".NET: Restore Tools",
+        "type": "process",
+        "command": "dotnet",
+        "args": ["tool", "restore"],
+        "problemMatcher": []
+      },
+      {
+        "label": ".NET: Restore",
+        "type": "process",
+        "command": "dotnet",
+        "args": ["restore", "DotNet.CodeCoverage.slnx"],
+        "problemMatcher": []
+      },
+      {
+        "label": ".NET: Build Debug",
+        "type": "process",
+        "command": "dotnet",
+        "args": ["build", "DotNet.CodeCoverage.slnx", "--configuration", "Debug", "--no-restore"],
+        "dependsOn": [".NET: Restore"],
+        "dependsOrder": "sequence",
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": ".NET: Build Release",
+        "type": "process",
+        "command": "dotnet",
+        "args": ["build", "DotNet.CodeCoverage.slnx", "--configuration", "Release", "--no-restore"],
+        "dependsOn": [".NET: Restore"],
+        "dependsOrder": "sequence",
+        "problemMatcher": "$msCompile"
+      },
+      {
+        "label": ".NET: Test",
+        "type": "process",
+        "command": "dotnet",
+        "args": ["test", "DotNet.CodeCoverage.slnx", "--configuration", "Release"],
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": ".NET: Test Unit",
+        "type": "process",
+        "command": "dotnet",
+        "args": ["test", "MaiorDeIdade.Tests/MaiorDeIdade.Tests.csproj", "--configuration", "Release"],
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": ".NET: Test Integration",
+        "type": "process",
+        "command": "dotnet",
+        "args": ["test", "MaiorDeIdade.IntegrationTests/MaiorDeIdade.IntegrationTests.csproj", "--configuration", "Release"],
+        "group": "test",
+        "problemMatcher": []
+      },
+      {
+        "label": ".NET: Coverage",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+          "test",
+          "DotNet.CodeCoverage.slnx",
+          "--configuration",
+          "Release",
+          "--results-directory",
+          "artifacts/test-results",
+          "--coverlet",
+          "--coverlet-output-format",
+          "cobertura"
+        ],
+        "problemMatcher": []
+      }
+    ]
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": ".NET: Debug MaiorDeIdade.Api",
+        "type": "coreclr",
+        "request": "launch",
+        "preLaunchTask": ".NET: Build Debug",
+        "program": "${workspaceFolder}/MaiorDeIdade.Api/bin/Debug/net10.0/MaiorDeIdade.Api.dll",
+        "cwd": "${workspaceFolder}/MaiorDeIdade.Api",
+        "stopAtEntry": false,
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "ASPNETCORE_URLS": "http://localhost:5055"
+        }
+      }
+    ]
+  }
+}

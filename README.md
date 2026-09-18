@@ -89,10 +89,22 @@ Este projeto mostra, de forma reproduzível, como:
 ├── MaiorDeIdade.IntegrationTests/
 │   ├── MaiorDeIdade.IntegrationTests.csproj
 │   └── MaioridadeEndpointTests.cs
-├── DotNet.CodeCoverage.sln
+├── .editorconfig
+├── .gitattributes
+├── Directory.Build.props
+├── DotNet.CodeCoverage.slnx
+├── dotnet-code-coverage.code-workspace
 ├── global.json
 └── LICENSE
 ```
+
+## Ambiente de desenvolvimento
+
+O repositório fixa o SDK em `10.0.400` via `global.json`, com `rollForward: latestFeature`. As convenções compartilhadas ficam em `.editorconfig` e `.gitattributes`, enquanto `Directory.Build.props` centraliza warnings como errors, analyzers do .NET 10, NuGet audit e build determinístico.
+
+Para VS Code, abra `dotnet-code-coverage.code-workspace`. O workspace versionado oferece tasks para restore, build, testes unitários, testes de integração e cobertura, além de uma configuração de debug para `MaiorDeIdade.Api`.
+
+A solution usa o formato `.slnx`, padrão para novas solutions no .NET 10.
 
 ## Executar os testes
 
@@ -101,8 +113,8 @@ Pré-requisito: SDK do .NET 10 instalado.
 Restaure as dependências e execute os testes:
 
 ```bash
-dotnet restore DotNet.CodeCoverage.sln
-dotnet test DotNet.CodeCoverage.sln
+dotnet restore DotNet.CodeCoverage.slnx
+dotnet test DotNet.CodeCoverage.slnx
 ```
 
 Os testes unitários usam um `TimeProvider` controlado. Dessa forma, cenários como exatamente 18 anos, aniversário amanhã, virada de mês, virada de ano, data futura e nascimento em 29 de fevereiro não dependem da data real da máquina.
@@ -136,7 +148,7 @@ dotnet tool restore
 Execute os testes coletando cobertura no formato Cobertura:
 
 ```bash
-dotnet test DotNet.CodeCoverage.sln \
+dotnet test DotNet.CodeCoverage.slnx \
   --configuration Release \
   --results-directory artifacts/test-results \
   --coverlet \
@@ -216,13 +228,14 @@ O workflow `.github/workflows/ci.yml` executa em pull requests e pushes para `ma
 
 1. restore das ferramentas locais;
 2. restore das dependências;
-3. build em Release;
-4. execução dos testes unitários e de integração;
-5. coleta de cobertura de ambos os projetos com Coverlet MTP;
-6. combinação dos relatórios com ReportGenerator;
-7. publicação do resumo no GitHub Actions;
-8. validação do quality gate;
-9. upload do artifact `coverage-report`.
+3. validação de formatação com `dotnet format --verify-no-changes`;
+4. build em Release;
+5. execução dos testes unitários e de integração;
+6. coleta de cobertura de ambos os projetos com Coverlet MTP;
+7. combinação dos relatórios com ReportGenerator;
+8. publicação do resumo no GitHub Actions;
+9. validação do quality gate;
+10. upload do artifact `coverage-report`.
 
 Além do CI principal:
 

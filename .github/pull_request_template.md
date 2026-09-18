@@ -15,8 +15,8 @@ Descreva os checks executados e eventuais limitações.
 - [ ] O escopo e a motivação do PR estão descritos acima.
 - [ ] Testes foram adicionados ou atualizados para mudanças de comportamento, ou foi explicado por que não são necessários.
 - [ ] `dotnet tool restore` foi executado com sucesso.
-- [ ] `dotnet restore DotNet.CodeCoverage.sln` foi executado com sucesso.
-- [ ] `dotnet build DotNet.CodeCoverage.sln --configuration Release --no-restore` foi executado com sucesso.
-- [ ] `dotnet test DotNet.CodeCoverage.sln --configuration Release --no-build` foi executado com sucesso.
+- [ ] `dotnet restore DotNet.CodeCoverage.slnx` foi executado com sucesso.
+- [ ] `dotnet build DotNet.CodeCoverage.slnx --configuration Release --no-restore` foi executado com sucesso.
+- [ ] `dotnet test DotNet.CodeCoverage.slnx --configuration Release --no-build` foi executado com sucesso.
 - [ ] Alterações que afetam testes ou regra de negócio consideraram cobertura e mutation testing quando aplicável.
 - [ ] Nenhum segredo, credencial, dado pessoal ou informação sensível foi incluído.

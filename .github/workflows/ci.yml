@@ -30,20 +30,23 @@ jobs:
       - name: Setup .NET 10
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.400'
 
       - name: Restore local tools
         run: dotnet tool restore
 
       - name: Restore dependencies
-        run: dotnet restore DotNet.CodeCoverage.sln
+        run: dotnet restore DotNet.CodeCoverage.slnx
+
+      - name: Verify formatting
+        run: dotnet format DotNet.CodeCoverage.slnx --verify-no-changes --no-restore
 
       - name: Build
-        run: dotnet build DotNet.CodeCoverage.sln --configuration Release --no-restore
+        run: dotnet build DotNet.CodeCoverage.slnx --configuration Release --no-restore
 
       - name: Test and collect coverage
         run: >-
-          dotnet test DotNet.CodeCoverage.sln
+          dotnet test DotNet.CodeCoverage.slnx
           --configuration Release
           --no-build
           --results-directory artifacts/test-results

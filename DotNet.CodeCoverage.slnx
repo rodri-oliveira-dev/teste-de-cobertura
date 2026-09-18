@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="MaiorDeIdade/MaiorDeIdade.csproj" />
+    <Project Path="MaiorDeIdade.Api/MaiorDeIdade.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="MaiorDeIdade.Tests/MaiorDeIdade.Tests.csproj" />
+    <Project Path="MaiorDeIdade.IntegrationTests/MaiorDeIdade.IntegrationTests.csproj" />
+  </Folder>
+</Solution>

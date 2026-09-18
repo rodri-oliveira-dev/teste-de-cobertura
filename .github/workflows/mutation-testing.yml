@@ -8,6 +8,10 @@ on:
       - 'MaiorDeIdade/**'
       - 'MaiorDeIdade.Tests/**'
       - '.config/dotnet-tools.json'
+      - 'Directory.Build.props'
+      - '.editorconfig'
+      - 'global.json'
+      - 'DotNet.CodeCoverage.slnx'
       - '.github/workflows/mutation-testing.yml'
   workflow_dispatch:
 
@@ -32,13 +36,13 @@ jobs:
       - name: Setup .NET 10
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.400'
 
       - name: Restore local tools
         run: dotnet tool restore
 
       - name: Restore dependencies
-        run: dotnet restore DotNet.CodeCoverage.sln
+        run: dotnet restore DotNet.CodeCoverage.slnx
 
       - name: Run mutation testing
         working-directory: MaiorDeIdade.Tests
