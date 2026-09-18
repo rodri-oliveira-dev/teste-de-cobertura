@@ -44,12 +44,21 @@ jobs:
       - name: Build
         run: dotnet build DotNet.CodeCoverage.slnx --configuration Release --no-restore
 
-      - name: Test and collect coverage
+      - name: Test unit and collect coverage
         run: >-
-          dotnet test DotNet.CodeCoverage.slnx
+          dotnet test MaiorDeIdade.Tests/MaiorDeIdade.Tests.csproj
           --configuration Release
           --no-build
-          --results-directory artifacts/test-results
+          --results-directory artifacts/test-results/unit
+          --coverlet
+          --coverlet-output-format cobertura
+
+      - name: Test integration and collect coverage
+        run: >-
+          dotnet test MaiorDeIdade.IntegrationTests/MaiorDeIdade.IntegrationTests.csproj
+          --configuration Release
+          --no-build
+          --results-directory artifacts/test-results/integration
           --coverlet
           --coverlet-output-format cobertura
 
