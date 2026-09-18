@@ -49,6 +49,20 @@ public class ValidacaoIdadeTest
         Assert.False(resultado);
     }
 
+    [Fact(DisplayName = "TimeProvider nulo lança ArgumentNullException")]
+    public void VerificaMaiorDeIdade_TimeProviderNulo_DeveLancarArgumentNullException()
+    {
+        // Arrange
+        var dataNascimento = new DateTime(2000, 1, 1);
+
+        // Act
+        var exception = Assert.Throws<ArgumentNullException>(
+            () => dataNascimento.VerificaMaiorDeIdade(null!));
+
+        // Assert
+        Assert.Equal("timeProvider", exception.ParamName);
+    }
+
     [Theory(DisplayName = "Valida maioridade para nascimento em ano bissexto")]
     [InlineData(2026, 2, 27, false)]
     [InlineData(2026, 2, 28, true)]

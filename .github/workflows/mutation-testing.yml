@@ -1,0 +1,80 @@
+name: Mutation Testing
+
+on:
+  pull_request:
+    branches:
+      - master
+      - main
+    paths:
+      - 'MaiorDeIdade/**'
+      - 'MaiorDeIdade.Tests/**'
+      - '.config/dotnet-tools.json'
+      - '.github/workflows/mutation-testing.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mutation-testing-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mutation-testing:
+    name: Run Stryker.NET
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore local tools
+        run: dotnet tool restore
+
+      - name: Restore dependencies
+        run: dotnet restore XUnit.Coverage.sln
+
+      - name: Run mutation testing
+        working-directory: MaiorDeIdade.Tests
+        run: dotnet stryker --output ../artifacts/mutation-testing
+
+      - name: Verify mutation report
+        shell: bash
+        run: |
+          report_file="$(find artifacts/mutation-testing -type f \( -name 'mutation-report.html' -o -name 'mutation-report.json' -o -name 'mutation-report.md' \) -print -quit)"
+
+          if [ -z "$report_file" ]; then
+            echo "Relatório de mutation testing não foi gerado."
+            exit 1
+          fi
+
+          echo "Relatório gerado: $report_file"
+
+      - name: Publish mutation testing summary
+        shell: bash
+        run: |
+          summary_file="$(find artifacts/mutation-testing -type f -name 'mutation-report.md' -print -quit)"
+
+          if [ -z "$summary_file" ]; then
+            echo "Resumo Markdown do Stryker não foi gerado."
+            exit 1
+          fi
+
+          cat "$summary_file"
+          cat "$summary_file" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload mutation testing report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: mutation-testing-report
+          path: artifacts/mutation-testing/
+          if-no-files-found: warn
+          retention-days: 7
