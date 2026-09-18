@@ -42,10 +42,10 @@ jobs:
           build-mode: manual
 
       - name: Restaurar dependências
-        run: dotnet restore XUnit.Coverage.sln
+        run: dotnet restore DotNet.CodeCoverage.sln
 
       - name: Compilar para análise
-        run: dotnet build XUnit.Coverage.sln --configuration Release --no-restore
+        run: dotnet build DotNet.CodeCoverage.sln --configuration Release --no-restore
 
       - name: Executar análise CodeQL
         uses: github/codeql-action/analyze@4c0873ef8656cb3c50b3f42fb63bc1ade0cfa827 # v4
