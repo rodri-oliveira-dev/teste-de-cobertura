@@ -30,44 +30,54 @@ jobs:
       - name: Setup .NET 10
         uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '10.0.400'
 
       - name: Restore local tools
         run: dotnet tool restore
 
       - name: Restore dependencies
-        run: dotnet restore DotNet.CodeCoverage.sln
+        run: dotnet restore DotNet.CodeCoverage.slnx
+
+      - name: Verify formatting
+        run: dotnet format DotNet.CodeCoverage.slnx --verify-no-changes --no-restore
 
       - name: Build
-        run: dotnet build DotNet.CodeCoverage.sln --configuration Release --no-restore
+        run: dotnet build DotNet.CodeCoverage.slnx --configuration Release --no-restore
 
-      - name: Test and collect coverage
+      - name: Test unit and collect coverage
         run: >-
-          dotnet test DotNet.CodeCoverage.sln
+          dotnet test MaiorDeIdade.Tests/MaiorDeIdade.Tests.csproj
           --configuration Release
           --no-build
-          --results-directory artifacts/test-results
+          --results-directory artifacts/test-results/unit
           --coverlet
           --coverlet-output-format cobertura
 
-      - name: Locate coverage report
-        id: coverage
+      - name: Test integration and collect coverage
+        run: >-
+          dotnet test MaiorDeIdade.IntegrationTests/MaiorDeIdade.IntegrationTests.csproj
+          --configuration Release
+          --no-build
+          --results-directory artifacts/test-results/integration
+          --coverlet
+          --coverlet-output-format cobertura
+
+      - name: Verify coverage reports
         shell: bash
         run: |
-          coverage_file="$(find artifacts/test-results -type f -name 'coverage.cobertura*.xml' -print -quit)"
+          coverage_count="$(find artifacts/test-results -type f -name 'coverage.cobertura*.xml' | wc -l)"
 
-          if [ -z "$coverage_file" ]; then
-            echo "Cobertura não foi gerada."
+          if [ "$coverage_count" -lt 2 ]; then
+            echo "Esperados relatórios de cobertura dos testes unitários e de integração; encontrados: $coverage_count."
             exit 1
           fi
 
-          echo "file=$coverage_file" >> "$GITHUB_OUTPUT"
-          echo "Arquivo de cobertura: $coverage_file"
+          echo "Relatórios de cobertura encontrados: $coverage_count"
 
-      - name: Generate coverage report
+      - name: Generate combined coverage report
         run: >-
           dotnet reportgenerator
-          -reports:"${{ steps.coverage.outputs.file }}"
+          -reports:"artifacts/test-results/**/coverage.cobertura*.xml"
           -targetdir:"artifacts/coverage-report"
           -reporttypes:"Html;TextSummary;MarkdownSummaryGithub"
 
@@ -77,17 +87,17 @@ jobs:
           cat artifacts/coverage-report/Summary.txt
           cat artifacts/coverage-report/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Enforce coverage quality gate
+      - name: Enforce combined coverage quality gate
         run: >-
           dotnet reportgenerator
-          -reports:"${{ steps.coverage.outputs.file }}"
+          -reports:"artifacts/test-results/**/coverage.cobertura*.xml"
           -targetdir:"artifacts/coverage-gate"
           -reporttypes:"TextSummary"
           --minimumCoverageThresholds:lineCoverage=90
           --minimumCoverageThresholds:branchCoverage=90
 
       - name: Upload coverage report
-        if: ${{ always() && steps.coverage.outputs.file != '' }}
+        if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           name: coverage-report
