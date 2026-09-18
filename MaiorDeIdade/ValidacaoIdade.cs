@@ -1,37 +1,23 @@
-﻿using System;
+namespace MaiorDeIdade;
 
-namespace MaiorDeIdade
+public static class ValidacaoIdade
 {
-    public static class ValidacaoIdade
+    private const int IdadeMinima = 18;
+
+    public static bool VerificaMaiorDeIdade(this DateTime dataNascimento, TimeProvider timeProvider)
     {
-        private const int MaiorDeIdade = 18;
+        ArgumentNullException.ThrowIfNull(timeProvider);
 
-        public static bool VerificaMaiorDeIdade(this DateTime dataNascimento)
+        var nascimento = DateOnly.FromDateTime(dataNascimento);
+        var hoje = DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime);
+
+        if (nascimento > hoje)
         {
-            int anoBase = DateTime.Today.Year - MaiorDeIdade;
-
-            if (dataNascimento.Year < anoBase)
-            {
-                return true;
-            }
-
-            if (anoBase == dataNascimento.Year)
-            {
-                if (dataNascimento.Month < DateTime.Now.Month)
-                {
-                    return true;
-                }
-
-                if (dataNascimento.Month == DateTime.Now.Month)
-                {
-                    if (dataNascimento.Day <= DateTime.Now.Day)
-                    {
-                        return true;
-                    }
-
-                }
-            }
             return false;
         }
+
+        var dataMaioridade = nascimento.AddYears(IdadeMinima);
+
+        return dataMaioridade <= hoje;
     }
 }

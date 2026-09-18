@@ -31,6 +31,7 @@ bld/
 [Oo]ut/
 [Tt]est[Rr]esults/
 [Cc]overagereport/
+artifacts/
 msbuild.log
 msbuild.err
 msbuild.wrn
