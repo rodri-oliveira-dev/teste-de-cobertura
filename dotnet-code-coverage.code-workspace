@@ -28,22 +28,36 @@
         "label": ".NET: Restore Tools",
         "type": "process",
         "command": "dotnet",
-        "args": ["tool", "restore"],
+        "args": [
+          "tool",
+          "restore"
+        ],
         "problemMatcher": []
       },
       {
         "label": ".NET: Restore",
         "type": "process",
         "command": "dotnet",
-        "args": ["restore", "DotNet.CodeCoverage.slnx"],
+        "args": [
+          "restore",
+          "DotNet.CodeCoverage.slnx"
+        ],
         "problemMatcher": []
       },
       {
         "label": ".NET: Build Debug",
         "type": "process",
         "command": "dotnet",
-        "args": ["build", "DotNet.CodeCoverage.slnx", "--configuration", "Debug", "--no-restore"],
-        "dependsOn": [".NET: Restore"],
+        "args": [
+          "build",
+          "DotNet.CodeCoverage.slnx",
+          "--configuration",
+          "Debug",
+          "--no-restore"
+        ],
+        "dependsOn": [
+          ".NET: Restore"
+        ],
         "dependsOrder": "sequence",
         "group": {
           "kind": "build",
@@ -55,8 +69,16 @@
         "label": ".NET: Build Release",
         "type": "process",
         "command": "dotnet",
-        "args": ["build", "DotNet.CodeCoverage.slnx", "--configuration", "Release", "--no-restore"],
-        "dependsOn": [".NET: Restore"],
+        "args": [
+          "build",
+          "DotNet.CodeCoverage.slnx",
+          "--configuration",
+          "Release",
+          "--no-restore"
+        ],
+        "dependsOn": [
+          ".NET: Restore"
+        ],
         "dependsOrder": "sequence",
         "problemMatcher": "$msCompile"
       },
@@ -64,7 +86,12 @@
         "label": ".NET: Test",
         "type": "process",
         "command": "dotnet",
-        "args": ["test", "DotNet.CodeCoverage.slnx", "--configuration", "Release"],
+        "args": [
+          "test",
+          "DotNet.CodeCoverage.slnx",
+          "--configuration",
+          "Release"
+        ],
         "group": "test",
         "problemMatcher": []
       },
@@ -72,7 +99,12 @@
         "label": ".NET: Test Unit",
         "type": "process",
         "command": "dotnet",
-        "args": ["test", "MaiorDeIdade.Tests/MaiorDeIdade.Tests.csproj", "--configuration", "Release"],
+        "args": [
+          "test",
+          "MaiorDeIdade.Tests/MaiorDeIdade.Tests.csproj",
+          "--configuration",
+          "Release"
+        ],
         "group": "test",
         "problemMatcher": []
       },
@@ -80,25 +112,56 @@
         "label": ".NET: Test Integration",
         "type": "process",
         "command": "dotnet",
-        "args": ["test", "MaiorDeIdade.IntegrationTests/MaiorDeIdade.IntegrationTests.csproj", "--configuration", "Release"],
+        "args": [
+          "test",
+          "MaiorDeIdade.IntegrationTests/MaiorDeIdade.IntegrationTests.csproj",
+          "--configuration",
+          "Release"
+        ],
         "group": "test",
         "problemMatcher": []
       },
       {
-        "label": ".NET: Coverage",
+        "label": ".NET: Coverage Unit",
         "type": "process",
         "command": "dotnet",
         "args": [
           "test",
-          "DotNet.CodeCoverage.slnx",
+          "MaiorDeIdade.Tests/MaiorDeIdade.Tests.csproj",
           "--configuration",
           "Release",
           "--results-directory",
-          "artifacts/test-results",
+          "artifacts/test-results/unit",
           "--coverlet",
           "--coverlet-output-format",
           "cobertura"
         ],
+        "problemMatcher": []
+      },
+      {
+        "label": ".NET: Coverage Integration",
+        "type": "process",
+        "command": "dotnet",
+        "args": [
+          "test",
+          "MaiorDeIdade.IntegrationTests/MaiorDeIdade.IntegrationTests.csproj",
+          "--configuration",
+          "Release",
+          "--results-directory",
+          "artifacts/test-results/integration",
+          "--coverlet",
+          "--coverlet-output-format",
+          "cobertura"
+        ],
+        "problemMatcher": []
+      },
+      {
+        "label": ".NET: Coverage",
+        "dependsOn": [
+          ".NET: Coverage Unit",
+          ".NET: Coverage Integration"
+        ],
+        "dependsOrder": "sequence",
         "problemMatcher": []
       }
     ]
