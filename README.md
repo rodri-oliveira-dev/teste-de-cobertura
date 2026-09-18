@@ -1,7 +1,7 @@
 # Cobertura de código em .NET
 
-[![CI](https://github.com/rodri-oliveira-dev/teste-de-cobertura/actions/workflows/ci.yml/badge.svg)](https://github.com/rodri-oliveira-dev/teste-de-cobertura/actions/workflows/ci.yml)
-[![Mutation Testing](https://github.com/rodri-oliveira-dev/teste-de-cobertura/actions/workflows/mutation-testing.yml/badge.svg)](https://github.com/rodri-oliveira-dev/teste-de-cobertura/actions/workflows/mutation-testing.yml)
+[![CI](https://github.com/rodri-oliveira-dev/dotnet-code-coverage/actions/workflows/ci.yml/badge.svg)](https://github.com/rodri-oliveira-dev/dotnet-code-coverage/actions/workflows/ci.yml)
+[![Mutation Testing](https://github.com/rodri-oliveira-dev/dotnet-code-coverage/actions/workflows/mutation-testing.yml/badge.svg)](https://github.com/rodri-oliveira-dev/dotnet-code-coverage/actions/workflows/mutation-testing.yml)
 
 Projeto de referência para demonstrar **testes automatizados, cobertura de código, mutation testing e quality gates em .NET 10** usando xUnit v3, Microsoft Testing Platform, Coverlet, ReportGenerator e Stryker.NET.
 

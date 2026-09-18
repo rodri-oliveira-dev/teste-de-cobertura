@@ -3,7 +3,6 @@ name: Mutation Testing
 on:
   pull_request:
     branches:
-      - master
       - main
     paths:
       - 'MaiorDeIdade/**'
